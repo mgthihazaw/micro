@@ -27,8 +27,8 @@ class ServiceResource extends JsonResource
             'received_remark' => $this->received_remark,
             'pending' => $this->pending,
             'service_description' => $this->service_description,
-            'service_remark' => $this->service_remark,
-            'received_date' => substr($this->received_date, 0 , 10),
+            'check_results' => $this->check_results,
+            'received_date' => $this->received_date,
             'invoice_id' => $this->invoice->id
         ];
     }

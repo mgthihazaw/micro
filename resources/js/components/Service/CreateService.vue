@@ -72,7 +72,7 @@
             </div>
 
             <div class="form-group row">
-              <div class="col-12">
+              <div class="col-md-6">
                 <label >Received By</label>
                 <multiselect
                   v-model="form.receive_staff"
@@ -89,10 +89,20 @@
                   :key="index"
                 >{{ error }}</div>
               </div>
+              <div class="col-lg-4 col-md-5 offset-md-1 offset-lg-2">
+                <label >Received Date</label>
+                <datetime format="YYYY-MM-DD H:i:s" v-model="form.date" name="date" required ></datetime>
+
+                <div
+                  class="error"
+                  v-for="(error,index) in form_errors['date']"
+                  :key="index"
+                >{{ error }}</div>
+              </div>
             </div>
 
             <div class="form-group">
-              <label for="description">Received Description</label>
+              <label for="description">Error Description</label>
               <editor
                :init="{menubar:false,
                        statusbar: false,
@@ -112,7 +122,7 @@
             </div>
 
             <div class="form-group">
-              <label for="remark">Received Remarks</label>
+              <label for="remark">Received Description</label>
               <editor
                 :init="{menubar:false,
                        statusbar: false,
@@ -143,10 +153,12 @@
 </template>
 <script>
 import Unauthorized403 from "../errors/Unauthorized403";
+import datetime from 'vuejs-datetimepicker';
 
 export default {
   components: {
-    Unauthorized: Unauthorized403
+    Unauthorized: Unauthorized403,
+    datetime 
   },
   data() {
     return {
@@ -161,7 +173,8 @@ export default {
         customer_address: "",
         receive_staff: "",
         description: "",
-        remark: ""
+        remark: "",
+        date : ""
       },
       form_errors: []
     };
@@ -260,6 +273,9 @@ export default {
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scope>
+#tj-datetime-input{
+  height: 43px;
+}
 .tox-notifications-container{
   display : none !important;
 }

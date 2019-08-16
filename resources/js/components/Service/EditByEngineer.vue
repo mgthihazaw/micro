@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="formcolor animated zoomIn">
+  <div>   
+    <div class="formcolor animated zoomIn" v-if="show">
       <div class="col-md-12">
         <div class="m-3">
           <h3 class="text-capitalize text-dark">
@@ -28,14 +28,14 @@
 
               <div class="info-box bg-light my-4 py-4">
                 <div class="info-box-content">
-                  <h5 class="info-box-text text-dark">Received Description</h5>
+                  <h5 class="info-box-text text-dark">Error Description</h5>
                   <span class="info-box-number  text-info mb-0" v-html = "service.received_description"></span>
                 </div>
               </div>
               
               <div class="info-box bg-light my-1 py-4">
                 <div class="info-box-content">
-                  <h5 class="info-box-text text-dark">Received Remarks</h5>
+                  <h5 class="info-box-text text-dark">Received Description</h5>
                   <span class="info-box-number  text-info mb-0" v-html="service.received_remark"></span>
                 </div>
               </div>
@@ -44,16 +44,22 @@
 
             <div class="col-7 pr-5">
               <form @submit.prevent="updateService">
-                <div class="form-group">
+                <div v-if="service.pending == 2 || service.pending == 3">
+                  <h5 class="text-dark">Check Results</h5>
+                  <p v-html="service.check_results">
+
+                  </p>
+                </div>
+                <div class="form-group" v-if="service.pending == 2 || service.pending == 3">
                   <label
                     for="service_descriptioin"
-                    class="form-control-label card-title"
+                    class="form-control-label"
                   >Service Description</label>
                   <editor
                     :init="{
                       menubar:false,
                        statusbar: false,
-                       toolbar : false
+                       toolbar : false,
                      }"
                      
                     class="form-control"
@@ -68,17 +74,18 @@
                   >{{ error }}</div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" v-if="service.pending == 0">
                   <label
                     for="service_descriptioin"
                     class="form-control-label card-title"
-                  >Service Remark</label>
+                  >Check Results</label>
                   <editor
                   :init="{menubar:false,
                        statusbar: false,
-                       toolbar : false}"
+                       toolbar : false,
+                       height : 350}"
                     class="form-control"
-                    v-model="form.service_remark"
+                    v-model="form.check_results"
                   
                   ></editor>
                   <div
@@ -91,7 +98,7 @@
                 <div class="form-group row">
                   <label
                     for="service_engineer"
-                    class="form-control-label card-title "
+                    class="form-control-label"
                   >Choose Service Engineer</label>
                   <multiselect
                     :options="service_engineers"
@@ -111,7 +118,10 @@
                   <div class="col-10 text-right offset-2">
                     
                     <button type="submit" class="btn btn-secondary" @click="back()">Back</button>
-                    <button type="submit" class="btn btn-success">Update</button>
+                    <button type="submit" class="btn btn-success">
+                      <span v-if="service.pending == 2 || service.pending == 3">Update</span>
+                      <span v-if="service.pending == 0">Check</span>
+                    </button>
                   </div>
                 </div>
               </form>
@@ -120,6 +130,7 @@
         </div>
       </div>
     </div>
+    <unauthorized v-else></unauthorized> 
     <div
       class="modal fade"
       id="secretModal"
@@ -154,14 +165,19 @@
 </template>
 
 <script>
+import Unauthorized403 from "../errors/Unauthorized403";
 export default {
+  components: {
+    unauthorized: Unauthorized403
+  },
   data() {
     return {
       service: "",
+      show : true,
       service_engineers: [],
       form: {
         service_description: "",
-        service_remark: "",
+        check_results: "",
         service_engineer: "",
         secret: ""
       },
@@ -182,7 +198,6 @@ export default {
     },
     loadService() {
       let id = this.$route.params.id;
-
       axios
         .get(`/api/services/${id}`)
         .then(res => {
@@ -190,6 +205,9 @@ export default {
           if (this.service.service_engineer) {
             this.form.service_description = this.service.service_description;
             this.form.service_remark = this.service.service_remark;
+          }
+          if(!(this.service.pending == 0 || this.service.pending == 2 || this.service.pending == 3)){
+            this.show = false
           }
         })
         .catch(error => {
@@ -207,6 +225,7 @@ export default {
         axios
           .put(`/api/services/${id}`, this.form)
           .then(response => {
+            console.log(response);
             if (response.status == 200) {
               Toast.fire({
                 type: "success",

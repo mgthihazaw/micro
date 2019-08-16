@@ -93,12 +93,12 @@
 
                   <div class="row">
                     <div class="des mb-4 col-6">
-                      <h6 class="mb-3">Received Description</h6>
+                      <h6 class="mb-3">Error Description</h6>
                       <span v-html="service.received_description"></span>
                     </div>
 
                     <div class="des mb-4 col-6">
-                      <h6 class="mb-3">Received Remarks</h6>
+                      <h6 class="mb-3">Received Description</h6>
                       <span v-html="service.received_remark"></span>
                     </div>
                   </div>
@@ -125,7 +125,7 @@
                           <th>Quantity</th>
                           <th>Unit Price</th>
                           <th>Amount</th>
-                          <th style="width: 20px"></th>
+                          <th></th>
                         </tr>
 
                         <tr
@@ -137,6 +137,10 @@
                           <td class="ml-2">
                             {{ item.brand.name }}
                             <span
+                              v-if="item.moden_no != '' && item.attributes.length < 1"
+                            >{{ item.model_no }}</span>
+                            <span
+                              v-else
                               v-for="(attribute,index) in item.attributes"
                               :key="index"
                             >{{ attribute.name }} &nbsp;</span>
@@ -148,9 +152,7 @@
                               min="1"
                               class="form-control"
                               v-model="item.quantity"
-                              :disabled="service.pending == 4"
                               @input="this.Bus.$emit('addItemForService',item)"
-                             
                             />
                             <span class="inputData">{{ item.quantity }}</span>
                           </td>
@@ -161,28 +163,16 @@
                               min="0"
                               v-model="item.price"
                               class="form-control"
-                              :disabled="service.pending == 4"
                               @input="this.Bus.$emit('addItemForService',item)"
                             />
                             <span class="inputData">{{ item.price }}</span>
                           </td>
                           <td class="ml-2">
-                            <input
-                              type="number"
-                              min="0"
-                              v-model="item.amount"
-                              class="form-control"
-                              :disabled="service.pending == 4"
-                              
-                            />
+                            <input type="number" min="0" v-model="item.amount" class="form-control" />
                             <span class="inputData">{{ item.amount }}</span>
                           </td>
                           <td>
-                            <button
-                              class="btn btn-danger btn-sm"
-                              @click="deleteItem(index)"
-                              v-if="service.pending != 4"
-                            >
+                            <button class="btn btn-danger btn-sm" @click="deleteItem(index)">
                               <i class="fas fa-minus"></i>
                             </button>
                           </td>
@@ -199,7 +189,6 @@
                             <p class="text-bold">{{ getTotal }}</p>
                           </td>
                           <td></td>
-                          <td></td>
                         </tr>
                       </tbody>
                     </table>
@@ -211,30 +200,34 @@
             </div>
           </div>
         </div>
-        <div class="button_group pb-4">
-          <button class="btn btn-secondary" @click="back()">Back</button>
-          <button
-            class="btn btn-success"
-            @click="print"
-            v-if="(service.pending == 3 || service.pending == 4) && printBtnDisplay  && serviceItems.length > 0"
-            
-          >Print Preview</button>
-          <button class="btn btn-primary" @click="save" v-if="service.pending != 4">Hold</button>
-          <button
-            type="button"
-            class="btn btn-info text-white"
-            data-toggle="modal"
-            data-target="#modal-xl"
-            v-if="service.pending != 4"
-          >
-            Add Item
-            <i class="ml-2 fas fa-plus-circle fa-1x"></i>
-          </button>
+        <div class="row">
+          <div class="col-md-11">
+            <div class="button_group pb-4">
+              <button class="btn btn-secondary" @click="back()">Back</button>
+              <button
+                type="button"
+                class="btn btn-info text-white"
+                data-toggle="modal"
+                data-target="#modal-lg"
+              >
+                Add Item
+                <i class="ml-2 fas fa-plus-circle fa-1x"></i>
+              </button>
+              <button class="btn btn-primary" @click="save">Save</button>
+            </div>
+          </div>
+          <div class="col-md-1 text-right">
+            <button
+                class="btn btn-success"
+                @click="print"
+                v-if="(service.pending == 3 || service.pending == 4) && printBtnDisplay  && serviceItems.length > 0"
+              >Print <i class="fa fa-print"></i></button>
+          </div>
         </div>
       </div>
 
-      <div class="modal fade" id="modal-xl" style="display: none;" aria-hidden="true" ref="modal">
-        <div class="modal-dialog modal-xl">
+      <div class="modal fade" id="modal-lg" style="display: none;" aria-hidden="true" ref="modal">
+        <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title text-info">Add Item for Service</h4>
@@ -274,7 +267,7 @@ export default {
       authorized: false,
       service: "",
       serviceItems: [],
-      printBtnDisplay : true
+      printBtnDisplay: true
     };
   },
   methods: {
@@ -303,7 +296,7 @@ export default {
     },
 
     deleteItem(index) {
-      this.printBtnDisplay = false
+      this.printBtnDisplay = false;
       this.serviceItems.splice(index, 1);
     },
     print() {
@@ -333,7 +326,7 @@ export default {
         .post(`/api/services/${this.service.id}/items`, data)
         .then(res => {
           this.service = res.data;
-          this.printBtnDisplay = true
+          this.printBtnDisplay = true;
         })
         .catch(err => {
           console.log(err);
@@ -342,7 +335,7 @@ export default {
   },
   created() {
     Bus.$on("addItemForService", item => {
-      this.printBtnDisplay = false
+      this.printBtnDisplay = false;
       item = { ...item, quantity: 1, amount: item.price };
 
       this.serviceItems.push(item);
@@ -375,7 +368,6 @@ export default {
     serviceItems: {
       handler: function(after, before) {
         before.forEach(data => {
-          
           data.amount = data.quantity * data.price;
         });
       },
@@ -386,7 +378,7 @@ export default {
     getTotal() {
       this.total = 0;
       let data;
-      
+
       data = this.serviceItems.forEach(serviceItem => {
         this.total += serviceItem.amount;
         return this.total;
@@ -396,7 +388,7 @@ export default {
   },
   beforeDestroy() {
     //While Modal is opened Route change has modal errors.That is dixed this error
-    $("#modal-xl").modal("hide");
+    $("#modal-lg").modal("hide");
     $(document.body).removeClass("modal-open");
     $(document.body).css("padding-right", "0px");
     $(".modal-backdrop").remove();

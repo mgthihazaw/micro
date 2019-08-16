@@ -28,7 +28,7 @@ class ServiceItemResource extends JsonResource
             'received_remark' => $this->received_remark,
             'pending' => $this->pending,
             'service_description' => $this->service_description,
-            'service_remark' => $this->service_remark,
+            'check_results' => $this->check_results,
             'created_at' =>$this->created_at,
             'items' => ItemResource::collection($this->items),
             'invoice_id' => $this->invoice->id

@@ -58,7 +58,7 @@ class ServiceController extends Controller
         $customer_phone = $request->customer_phone;
         $customer_address = $request->customer_address;
         $staff_id = $request->receive_staff;
-
+        $date = $request->date;
         $description = $request->description;
         $remark = $request->remark;
         $customer_id = $request->customer_id;
@@ -66,6 +66,7 @@ class ServiceController extends Controller
         if($customer_id){
             $request->validate([
                 'customer_id' => 'required|integer',
+                'date' => 'required|date_format:Y-m-d H:i:s',
                 'receive_staff' => 'required|integer',
                 'description' => 'required|string',
                 'remark' => 'sometimes',
@@ -76,6 +77,7 @@ class ServiceController extends Controller
                 'staff_id' => $staff_id,
                 'description' => $description,
                 'remark' => $remark,
+                'received_date' => $date
             ]);
             $service->invoice()->create([
                 'total_price' => $total_price,
@@ -84,13 +86,12 @@ class ServiceController extends Controller
                 'opened_date' => now()->format('Y-m-d'),
             ]);
         }else{
-            
-
             $request->validate([
                 'customer_name' => 'required|string',
                 'customer_phone' => 'required',
                 'customer_address' => 'required|string',
                 'receive_staff' => 'required|integer',
+                'date' => 'required|date_format:Y-m-d H:i:s',
                 'description' => 'required|string',
                 'remark' => 'sometimes',
             ]);
@@ -101,9 +102,9 @@ class ServiceController extends Controller
                 'customer_phone' => $customer_phone,
                 'customer_address' => $customer_address,
                 'staff_id' => $staff_id,
+                'received_date' => $date,
                 'received_description' => $description,
                 'received_remark' => $remark,
-                'received_date' => now(),
             ]);
             $service->invoice()->create([
                 'total_price' => 0,
@@ -152,43 +153,56 @@ class ServiceController extends Controller
         $service = Service::findOrFail($id);
 
         if($request->service_engineer){
-            $request->validate([
-                'service_description' => 'required|string',
-                'service_remark' => 'sometimes',
-                'service_engineer' => 'required|integer',
-            ]);
-
             $secret = $request->secret;
             $serviceEngineer = Staff::findOrFail($request->service_engineer);
 
             if(Hash::check($secret, $serviceEngineer->secret)){
-                $service->update([
-                    'service_description' => $request->service_description,
-                    'service_remark' => $request->service_remark,
-                    'service_engineer_id' => $request->service_engineer,
-                    'pending' => 2,
-                    'finished_date' => now(),
-                ]);
-
-                return response()->json('Service has been finished', 200);
+                if($service->pending == 2){
+                    $request->validate([
+                        'service_description' => 'required|string',
+                        'service_engineer' => 'required|integer',
+                    ]);
+                    $service->update([
+                        'service_description' => $request->service_description,
+                        'service_engineer_id' => $request->service_engineer,
+                        'pending' => 3,
+                    ]);
+                    return response()->json('Service has been finished', 200);
+                }else if($service->pending == 0){
+                    $request->validate([
+                        'check_results' => 'required'
+                    ]);
+    
+                    $service->update([
+                        'check_results' => $request->check_results,
+                        'pending' => 1
+                    ]);
+    
+                    return response()->json('Service has been checked', 200);
+                }else if($service->pending == 3){
+                    $request->validate([
+                        'service_description' => 'required|string',
+                        'service_engineer' => 'required|integer',
+                    ]);
+                    $service->update([
+                        'service_description' => $request->service_description,
+                        'service_engineer_id' => $request->service_engineer,
+                        'pending' => 3,
+                    ]);
+                    return response()->json('Service has been finished', 200);
+                }
             }else{
                 return response()->json(['error' => 'Your secret is wrong'], 401);
             }
-            
         }
 
-        if($service->pending == 3){
-            $service->update([
-                'pending' => 4
-            ]);
-
-            return response()->json($service, 200);
-        }else if($service->pending != 4){
+        if($service->pending == 0){
             $request->validate([
                 'customer_name' => 'required|string',
                 'customer_phone' => 'required',
                 'customer_address' => 'required|string',
                 'receive_staff' => 'required|integer',
+                'date' => 'required|date_format:Y-m-d H:i:s',
                 'description' => 'required|string',
                 'remark' => 'sometimes',
             ]);
@@ -198,11 +212,43 @@ class ServiceController extends Controller
                 'customer_name'=>$request->customer_name,
                 'customer_phone'=>$request->customer_phone,
                 'customer_address'=>$request->customer_address,
+                'received_date' => $request->date,
                 'received_description'=>$request->description,
                 'received_remark'=>$request->remark,
             ]);
-            return response()->json("Sevice Successfully Updated");
+            return response()->json("Service Successfully Updated");
+        }else if($service->pending == 1){
+            $request->validate([
+                'customer_name' => 'required|string',
+                'customer_phone' => 'required',
+                'customer_address' => 'required|string',
+                'receive_staff' => 'required|integer',
+                'date' => 'required|date_format:Y-m-d H:i:s',
+                'description' => 'required|string',
+                'remark' => 'sometimes',
+            ]);
+
+            $service->update([
+                'staff_id'=>$request->receive_staff,
+                'customer_name'=>$request->customer_name,
+                'customer_phone'=>$request->customer_phone,
+                'customer_address'=>$request->customer_address,
+                'received_date' => $request->date,
+                'received_description'=>$request->description,
+                'received_remark'=>$request->remark,
+                'pending' => 2
+            ]);
+            return response()->json('Service is successfully proceed', 200);
+        }else if($service->pending == 4){
+            $service->update([
+                'pending' => 5,
+                'finished_date' => now()
+            ]);
+
+            return response()->json($service, 200);
         }
+
+        
 
         return response()->json($service, 200);
     }
@@ -215,8 +261,11 @@ class ServiceController extends Controller
      */
     public function destroy($id)
     {
-        Service::findOrFail($id)->delete();
+        $service = Service::findOrFail($id);
+        $service->update([
+            'pending' => -1
+        ]);
 
-        return response()->json("Successfully Deleted");
+        return response()->json("Service is cancelled", 200);
     }
 }

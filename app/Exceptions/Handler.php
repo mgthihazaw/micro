@@ -76,10 +76,12 @@ class Handler extends ExceptionHandler
                 return response()->json(['error' => 'URL Not Found'], 404);
             }else if($exception instanceof MethodNotAllowedHttpException){
                 return response()->json(['error' => 'Method not allowed for the requested endpoint'], 405);
-            }else if($exception instanceof QueryException){
-                // dd($exception->getMessage());
-                return response()->json(['error' => 'Query Exception'], 500);
-            }else if($exception instanceof ValidationException) {
+            }
+            // else if($exception instanceof QueryException){
+            //     // dd($exception->getMessage());
+            //     return response()->json(['error' => 'Query Exception'], 500);
+            // }
+            else if($exception instanceof ValidationException) {
                 return $this->convertValidationExceptionToResponse($exception, $request);
             }
             dd($exception);

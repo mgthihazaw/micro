@@ -183,7 +183,10 @@
         <!-- Main content -->
         <div class="content pt-4">
           <div class="container-fluid py-2">
-            <router-view></router-view>
+            
+              <router-view></router-view>
+            
+            
           </div>
           <!-- /.container-fluid -->
         </div>

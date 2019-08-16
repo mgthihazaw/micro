@@ -31,6 +31,12 @@
             .tox-notifications-container{
                 display : none !important;
             }
+            .btn-xs{
+                padding: .3rem .4rem;
+                font-size: .775rem;
+                line-height: .5;
+                border-radius: .2rem;
+            }
         </style>
     </head>
     <body class="hold-transition sidebar-mini">

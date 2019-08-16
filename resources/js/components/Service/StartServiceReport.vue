@@ -27,7 +27,7 @@
                   <h6 class="text-dark">Date</h6>
                 </div>
                 <div class="col-9">
-                  <p class="text-dark">{{ service.created_at | myDate}}</p>
+                  <p class="text-dark">{{ service.received_date | dateFilter }}</p>
                 </div>
               </div>
             </div>
@@ -93,12 +93,12 @@
 
                     <div class="row">
                       <div class="ml-3 callout callout-info mb-4 col-5">
-                        <h6 class="mb-3">Received Description</h6>
+                        <h6 class="mb-3">Error Description</h6>
                         <span v-html="service.received_description"></span>
                       </div>
                       <div class="col-1"></div>
                       <div class="ml-2 callout callout-info mb-4 col-5">
-                        <h6 class="mb-3">Received Remarks</h6>
+                        <h6 class="mb-3">Received Description</h6>
                         <span v-html="service.received_remark"></span>
                       </div>
                     </div>
@@ -169,7 +169,14 @@ export default {
     }
 
     this.loadService();
+  },
+  filters: {
+  dateFilter: function (value) {
+    if (!value) return ''
+    value = value.toString()
+    return value.substring(0, 10)
   }
+}
 };
 </script>
 

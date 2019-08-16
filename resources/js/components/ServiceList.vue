@@ -1,7 +1,9 @@
 <template>
+
   <div v-if="show">
     <unauthorized v-if="!can('service-list')"></unauthorized>
     <div v-else>
+      
       <div class="row">
         <div class="col-md-12 table-scroll">
           <div class="mb-2 row">
@@ -44,8 +46,12 @@
                   <select name="service_filter" id="service_filter" class="form-control" v-model="service_filter" @change="filter_service">
                     <option value=''>All</option>
                     <option value="0">Not Finished</option>
-                    <option value="1">Finished</option>
-                    <option value="2">Paid</option>
+                    <option value="1">Checked</option>
+                    <option value="2">Proceed</option>
+                    <option value="3">Finished</option>
+                    <option value="4">Hold</option>
+                    <option value="5">Paid</option>
+                    <option value="-1">Cancel</option>
                   </select>
                 </div>
               </div>
@@ -78,60 +84,71 @@
                 <td>{{ service.customer_phone }}</td>
                 <td>{{ service.staff }}</td>
                 <td>{{ service.service_engineer }}</td>
-                <td>{{ service.received_date }}</td>
+                <td>{{ service.received_date.substring(0, 10) }}</td>
                 <td>
+                  <span
+                    class="badge badge-secondary"
+                    style="padding-top : 8px ; padding-bottom : 5px ; font-size : 10px"
+                    v-if="service.pending == -1"
+                  >Cancelled</span>
                   <span
                     class="badge badge-danger"
                     style="padding-top : 8px ; padding-bottom : 5px ; font-size : 10px;"
-                    
                     v-if="service.pending == 0"
                   >Not Finished</span>
                   <span
+                    class="badge"
+                    style="padding-top : 8px ; padding-bottom : 5px ; font-size : 10px;background-color : #ff8800;color : white;"
+                    v-if="service.pending == 1"
+                  >Checked</span>
+                  <span
+                    class="badge badge-info text-white"
+                    style="padding-top : 8px ; padding-bottom : 5px ; font-size : 10px;"
+                    v-if="service.pending == 2"
+                  >Proceed</span>
+                  <span
                     class="badge badge-success"
                     style="padding-top : 8px ; padding-bottom : 5px ; font-size : 10px;"
-                    
-                    v-if="service.pending == 2"
-                  > Finished</span>
-                  <span
-                    class="badge badge-warning px-2 text-dark"
-                    style="padding-top : 8px ; padding-bottom : 5px ; font-size : 10px;"
-                    
                     v-if="service.pending == 3"
+                  >Finished</span>
+                  <span
+                    class="badge badge-warning text-dark"
+                    style="padding-top : 8px ; padding-bottom : 5px ; font-size : 10px;"
+                    v-if="service.pending == 4"
                   >Hold</span>
                   <span
-                    class="badge badge-info px-2 text-white"
-                    style="padding-top : 8px ; padding-bottom : 5px ; font-size : 10px;"
-                    
-                    v-if="service.pending == 4"
+                    class="badge text-white"
+                    style="padding-top : 8px ; padding-bottom : 5px ; font-size : 10px;background-color : indigo"
+                    v-if="service.pending == 5"
                   >Paid</span>
                 </td>
                 <td>
                   <button
-                    class="btn btn-info btn-sm text-white"
+                    class="btn btn-info btn-xs text-white"
                     @click="editServicebySaleperson(service.id)"
-                    v-if="User.isSaleperson() && !service.pending"
+                    v-if="User.isSaleperson() && (service.pending == 0 || service.pending == 1 || service.pending == 2)"
                   >
                     <i class="fa fa-edit"></i>
                   </button>
                   <button
-                    class="btn btn-secondary btn-sm"
+                    class="btn btn-secondary btn-xs"
                     @click="printView(service.id)"
-                    v-if="User.isSaleperson() && (service.pending == 0 || service.pending == 1)"
+                    v-if="User.isSaleperson() && (service.pending == 0)"
                   >
                     <i class="fas fa-print"></i>
                   </button>
                   <button
-                    class="btn btn-primary btn-sm text-white"
+                    class="btn btn-primary btn-xs text-white"
                     @click="editServicebyServiceEngineer(service.id)"
-                    v-if="User.isServiceEngineer() && service.pending !=2"
+                    v-if="User.isServiceEngineer() && (service.pending == 0 || service.pending == 2 || service.pending == 3)"
                   >
                     <i class="fa fa-edit"></i>
                   </button>
 
                   <router-link
                     :to="'/services/'+service.id+'/show'"
-                    class="btn btn-success btn-sm text-white"
-                    v-if="User.isSaleperson() && (service.pending == 2 || service.pending == 3 || service.pending == 4) "
+                    class="btn btn-success btn-xs text-white"
+                    v-if="User.isSaleperson() && (service.pending == 3 || service.pending == 4 || service.pending == 5) "
                   >
                     <i class="fas fa-print"></i>
                   </router-link>
@@ -143,8 +160,10 @@
           <pagination :data="paginationData" @pagination-change-page="getServiceList"></pagination>
         </div>
       </div>
+      
     </div>
   </div>
+ 
 </template>
 
 <script>
@@ -245,6 +264,7 @@ export default {
   },
 
   created() {
+    
     this.auth();
     this.getServiceList();
     Bus.$on("afterServiceDeleted", () => {

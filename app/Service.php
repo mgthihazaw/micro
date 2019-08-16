@@ -10,7 +10,7 @@ class Service extends Model
    public $timestamps  = false;
 
    protected $fillable = ['business_id','staff_id','service_engineer_id','customer_id','customer_name','customer_phone','customer_address',
-   'received_description','received_remark','pending','service_description','service_remark','received_date','finished_date'];
+   'received_description','received_remark','pending','service_description','check_results','received_date','finished_date'];
 
 	public function staff(){
 		return $this->belongsTo('App\Staff');

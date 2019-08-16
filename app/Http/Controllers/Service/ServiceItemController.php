@@ -43,13 +43,13 @@ class ServiceItemController extends Controller
                 ]);
             }
     
-            $service->update(['pending' => 3]);
+            $service->update(['pending' => 4]);
     
             $service->invoice->update(['total_price' => $total_price, 'closed_date' => now()->format('Y-m-d')]);
-            return response()->json($service, 201);
+            return response()->json(new ServiceItemResource($service), 201);
         }
         $service->items()->detach();
-        return response()->json($service, 200);
+        return response()->json(new ServiceItemResource($service), 200);
     }
 
     /**
