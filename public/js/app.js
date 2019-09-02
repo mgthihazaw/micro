@@ -83559,11 +83559,12 @@ var render = function() {
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12" }, [
-                        _c("h6", { staticClass: "mb-3" }, [
-                          _vm._v("Service Remarks")
+                        _c("label", { staticClass: "mb-3" }, [
+                          _vm._v("Check Results")
                         ]),
                         _vm._v(" "),
                         _c("span", {
+                          staticStyle: { color: "red" },
                           domProps: {
                             innerHTML: _vm._s(_vm.service.check_results)
                           }
@@ -83949,6 +83950,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -83959,6 +83978,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       service: "",
       show: true,
+      disabledCheck: true,
+      disabledFinish: true,
       service_engineers: [],
       form: {
         service_description: "",
@@ -84018,7 +84039,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             _this3.$router.push("/services");
           }
         }).catch(function (error) {
-
           _this3.form.secret = "";
           if (error.response.status == 422) {
             Toast.fire({
@@ -84052,6 +84072,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     back: function back() {
       this.$router.push("/services");
+    },
+    displayFinish: function displayFinish() {
+
+      if (this.form.service_description.trim().length > 0) {
+        console.log('service');
+        this.disabledFinish = false;
+        this.disabledCheck = true;
+        this.form.check_results = '';
+      }
+    },
+    displayCheck: function displayCheck() {
+      if (this.form.check_results.trim().length > 0) {
+        console.log('check');
+        this.disabledCheck = false;
+        this.disabledFinish = true;
+        this.form.service_description = '';
+      }
     }
   },
   created: function created() {
@@ -84062,7 +84099,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     //While Modal is opened Route change has modal errors.That is dixed this error
     $("#secretModal").modal("hide");
     $(document.body).removeClass("modal-open");
-    $(document.body).css('padding-right', "0px");
+    $(document.body).css("padding-right", "0px");
     $(".modal-backdrop").remove();
   }
 });
@@ -84136,7 +84173,7 @@ var render = function() {
                         ]),
                         _vm._v(" "),
                         _c("span", {
-                          staticClass: "info-box-number  text-info mb-0",
+                          staticClass: "info-box-number text-info mb-0",
                           domProps: {
                             innerHTML: _vm._s(_vm.service.received_description)
                           }
@@ -84151,7 +84188,7 @@ var render = function() {
                         ]),
                         _vm._v(" "),
                         _c("span", {
-                          staticClass: "info-box-number  text-info mb-0",
+                          staticClass: "info-box-number text-info mb-0",
                           domProps: {
                             innerHTML: _vm._s(_vm.service.received_remark)
                           }
@@ -84179,6 +84216,7 @@ var render = function() {
                               ]),
                               _vm._v(" "),
                               _c("p", {
+                                staticStyle: { color: "red" },
                                 domProps: {
                                   innerHTML: _vm._s(_vm.service.check_results)
                                 }
@@ -84238,52 +84276,93 @@ var render = function() {
                           : _vm._e(),
                         _vm._v(" "),
                         _vm.service.pending == 0
-                          ? _c(
-                              "div",
-                              { staticClass: "form-group" },
-                              [
-                                _c(
-                                  "label",
-                                  {
-                                    staticClass:
-                                      "form-control-label card-title",
-                                    attrs: { for: "service_descriptioin" }
-                                  },
-                                  [_vm._v("Check Results")]
-                                ),
-                                _vm._v(" "),
-                                _c("editor", {
-                                  staticClass: "form-control",
-                                  attrs: {
-                                    init: {
-                                      menubar: false,
-                                      statusbar: false,
-                                      toolbar: false,
-                                      height: 350
-                                    }
-                                  },
-                                  model: {
-                                    value: _vm.form.check_results,
-                                    callback: function($$v) {
-                                      _vm.$set(_vm.form, "check_results", $$v)
+                          ? _c("div", [
+                              _c(
+                                "div",
+                                { staticClass: "form-group" },
+                                [
+                                  _c(
+                                    "label",
+                                    {
+                                      staticClass:
+                                        "form-control-label card-title",
+                                      attrs: { for: "service_descriptioin" }
                                     },
-                                    expression: "form.check_results"
-                                  }
-                                }),
-                                _vm._v(" "),
-                                _vm._l(
-                                  _vm.form_errors["service_remark"],
-                                  function(error, index) {
-                                    return _c(
-                                      "div",
-                                      { key: index, staticClass: "error" },
-                                      [_vm._v(_vm._s(error))]
-                                    )
-                                  }
-                                )
-                              ],
-                              2
-                            )
+                                    [_vm._v("Check Results")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("editor", {
+                                    staticClass: "form-control",
+                                    attrs: {
+                                      init: {
+                                        menubar: false,
+                                        statusbar: false,
+                                        toolbar: false
+                                      }
+                                    },
+                                    on: { input: _vm.displayCheck },
+                                    model: {
+                                      value: _vm.form.check_results,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "check_results", $$v)
+                                      },
+                                      expression: "form.check_results"
+                                    }
+                                  }),
+                                  _vm._v(" "),
+                                  _vm._l(
+                                    _vm.form_errors["service_remark"],
+                                    function(error, index) {
+                                      return _c(
+                                        "div",
+                                        { key: index, staticClass: "error" },
+                                        [_vm._v(_vm._s(error))]
+                                      )
+                                    }
+                                  )
+                                ],
+                                2
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                { staticClass: "form-group" },
+                                [
+                                  _c(
+                                    "label",
+                                    {
+                                      staticClass: "form-control-label",
+                                      attrs: { for: "service_descriptioin" }
+                                    },
+                                    [_vm._v("Service Description")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("editor", {
+                                    staticClass: "form-control",
+                                    attrs: {
+                                      init: {
+                                        menubar: false,
+                                        statusbar: false,
+                                        toolbar: false
+                                      }
+                                    },
+                                    on: { input: _vm.displayFinish },
+                                    model: {
+                                      value: _vm.form.service_description,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.form,
+                                          "service_description",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "form.service_description"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            ])
                           : _vm._e(),
                         _vm._v(" "),
                         _c(
@@ -84345,23 +84424,45 @@ var render = function() {
                                 [_vm._v("Back")]
                               ),
                               _vm._v(" "),
-                              _c(
-                                "button",
-                                {
-                                  staticClass: "btn btn-success",
-                                  attrs: { type: "submit" }
-                                },
-                                [
-                                  _vm.service.pending == 2 ||
-                                  _vm.service.pending == 3
-                                    ? _c("span", [_vm._v("Update")])
-                                    : _vm._e(),
-                                  _vm._v(" "),
-                                  _vm.service.pending == 0
-                                    ? _c("span", [_vm._v("Check")])
-                                    : _vm._e()
-                                ]
-                              )
+                              _vm.service.pending == 0
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btn-success",
+                                      attrs: {
+                                        type: "submit",
+                                        disabled: _vm.disabledFinish
+                                      }
+                                    },
+                                    [_vm._v("Finish")]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _vm.service.pending == 2 ||
+                              _vm.service.pending == 3
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btn-success",
+                                      attrs: { type: "submit" }
+                                    },
+                                    [_vm._v("Finish")]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _vm.service.pending == 0
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btn-info",
+                                      attrs: {
+                                        type: "submit",
+                                        disabled: _vm.disabledCheck
+                                      }
+                                    },
+                                    [_vm._v("Checked")]
+                                  )
+                                : _vm._e()
                             ]
                           )
                         ])
@@ -86199,6 +86300,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -86368,75 +86472,77 @@ var render = function() {
                   ])
                 ]),
                 _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "col-md-12 table-scroll" },
-                  [
-                    _c("table", { staticClass: "table table-hover " }, [
-                      _c(
-                        "tbody",
-                        [
-                          _c("tr", { staticClass: "heading" }, [
-                            _c("th", { staticStyle: { width: "200px" } }, [
-                              _vm._v("#")
-                            ]),
-                            _vm._v(" "),
-                            _c("th", [_vm._v("Name")]),
-                            _vm._v(" "),
-                            _c("th", { staticStyle: { width: "200px" } }, [
-                              _vm._v("Action")
-                            ])
+                _c("div", { staticClass: "col-md-12 table-scroll" }, [
+                  _c("table", { staticClass: "table table-hover " }, [
+                    _c(
+                      "tbody",
+                      [
+                        _c("tr", { staticClass: "heading" }, [
+                          _c("th", { staticStyle: { width: "200px" } }, [
+                            _vm._v("#")
                           ]),
                           _vm._v(" "),
-                          _vm._l(_vm.itemTypes, function(type, index) {
-                            return _c(
-                              "tr",
-                              { key: index, staticClass: "animated fadeIn" },
-                              [
-                                _c("td", [
-                                  _vm._v(
-                                    _vm._s(_vm.paginationData.meta.from + index)
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [_vm._v(_vm._s(type.name))]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c(
-                                    "button",
-                                    {
-                                      staticClass:
-                                        "btn btn-warning btn-sm text-white",
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.editType(type)
-                                        }
+                          _c("th", [_vm._v("Name")]),
+                          _vm._v(" "),
+                          _c("th", { staticStyle: { width: "200px" } }, [
+                            _vm._v("Action")
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _vm._l(_vm.itemTypes, function(type, index) {
+                          return _c(
+                            "tr",
+                            { key: index, staticClass: "animated fadeIn" },
+                            [
+                              _c("td", [
+                                _vm._v(
+                                  _vm._s(_vm.paginationData.meta.from + index)
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [_vm._v(_vm._s(type.name))]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass:
+                                      "btn btn-warning btn-sm text-white",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.editType(type)
                                       }
-                                    },
-                                    [_c("i", { staticClass: "fa fa-edit" })]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "button",
-                                    {
-                                      staticClass: "btn btn-danger btn-sm",
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.deleteType(type.id)
-                                        }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fa fa-edit" })]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-danger btn-sm",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.deleteType(type.id)
                                       }
-                                    },
-                                    [_c("i", { staticClass: "fa fa-times" })]
-                                  )
-                                ])
-                              ]
-                            )
-                          })
-                        ],
-                        2
-                      )
-                    ]),
-                    _vm._v(" "),
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fa fa-times" })]
+                                )
+                              ])
+                            ]
+                          )
+                        })
+                      ],
+                      2
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col-md-12 mt-3" },
+                  [
                     _c("pagination", {
                       attrs: { data: _vm.paginationData },
                       on: { "pagination-change-page": _vm.getItemTypes }

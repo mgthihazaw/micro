@@ -187,8 +187,8 @@
             </div>
 
             <div class="col-12">
-              <h6 class="mb-3">Service Remarks</h6>
-              <span v-html="service.check_results"></span>
+              <label class="mb-3">Check Results</label>
+              <span style="color : red" v-html="service.check_results"></span>
             </div>
           </div>
 

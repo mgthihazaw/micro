@@ -1,5 +1,5 @@
 <template>
-  <div>   
+  <div>
     <div class="formcolor animated zoomIn" v-if="show">
       <div class="col-md-12">
         <div class="m-3">
@@ -19,8 +19,6 @@
                 <p class="card-text text-secondary">{{ service.customer_phone}}</p>
               </div>
 
-              
-
               <div class="pb-3">
                 <h5 class="card-title">Received Staff</h5>
                 <p class="card-text text-secondary">{{ service.staff}}</p>
@@ -29,44 +27,39 @@
               <div class="info-box bg-light my-4 py-4">
                 <div class="info-box-content">
                   <h5 class="info-box-text text-dark">Error Description</h5>
-                  <span class="info-box-number  text-info mb-0" v-html = "service.received_description"></span>
+                  <span
+                    class="info-box-number text-info mb-0"
+                    v-html="service.received_description"
+                  ></span>
                 </div>
               </div>
-              
+
               <div class="info-box bg-light my-1 py-4">
                 <div class="info-box-content">
                   <h5 class="info-box-text text-dark">Received Description</h5>
-                  <span class="info-box-number  text-info mb-0" v-html="service.received_remark"></span>
+                  <span class="info-box-number text-info mb-0" v-html="service.received_remark"></span>
                 </div>
               </div>
-              
             </div>
 
             <div class="col-7 pr-5">
               <form @submit.prevent="updateService">
                 <div v-if="service.pending == 2 || service.pending == 3">
                   <h5 class="text-dark">Check Results</h5>
-                  <p v-html="service.check_results">
-
-                  </p>
+                  <p style="color : red" v-html="service.check_results"></p>
                 </div>
                 <div class="form-group" v-if="service.pending == 2 || service.pending == 3">
-                  <label
-                    for="service_descriptioin"
-                    class="form-control-label"
-                  >Service Description</label>
+                  <label for="service_descriptioin" class="form-control-label">Service Description</label>
                   <editor
                     :init="{
                       menubar:false,
                        statusbar: false,
                        toolbar : false,
                      }"
-                     
                     class="form-control"
                     v-model="form.service_description"
-                    
                   ></editor>
-                  
+
                   <div
                     class="error"
                     v-for="(error,index) in form_errors['service_description']"
@@ -74,32 +67,56 @@
                   >{{ error }}</div>
                 </div>
 
-                <div class="form-group" v-if="service.pending == 0">
-                  <label
-                    for="service_descriptioin"
-                    class="form-control-label card-title"
-                  >Check Results</label>
-                  <editor
-                  :init="{menubar:false,
+                <div v-if="service.pending == 0">
+                  <div class="form-group">
+                    <label
+                      for="service_descriptioin"
+                      class="form-control-label card-title"
+                    >Check Results</label>
+                    <editor
+                      :init="{menubar:false,
                        statusbar: false,
                        toolbar : false,
-                       height : 350}"
-                    class="form-control"
-                    v-model="form.check_results"
-                  
-                  ></editor>
-                  <div
-                    class="error"
-                    v-for="(error,index) in form_errors['service_remark']"
-                    :key="index"
-                  >{{ error }}</div>
+                      }"
+                      class="form-control"
+                      v-model="form.check_results"
+                      @input="displayCheck" 
+                    ></editor>
+                    <div
+                      class="error"
+                      v-for="(error,index) in form_errors['service_remark']"
+                      :key="index"
+                    >{{ error }}</div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-10 text-right offset-2">
+                    <button
+                      type="submit"
+                      class="btn btn-info"
+                      v-if="service.pending == 0"
+                      :disabled="disabledCheck"
+                    >Checked</button>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    
+                    <label for="service_descriptioin" class="form-control-label">Service Description</label>
+                    <editor
+                      :init="{
+                      menubar:false,
+                       statusbar: false,
+                       toolbar : false,
+                     }"
+                      class="form-control"
+                      v-model="form.service_description"
+                      @input="displayFinish"
+                    ></editor>
+                  </div>
                 </div>
 
                 <div class="form-group row">
-                  <label
-                    for="service_engineer"
-                    class="form-control-label"
-                  >Choose Service Engineer</label>
+                  <label for="service_engineer" class="form-control-label">Choose Service Engineer</label>
                   <multiselect
                     :options="service_engineers"
                     v-model="form.service_engineer"
@@ -112,16 +129,23 @@
 
                   <div v-if="service_engineer_error" class="error">Select the service engineer</div>
                 </div>
-                
 
                 <div class="form-group row">
                   <div class="col-10 text-right offset-2">
-                    
                     <button type="submit" class="btn btn-secondary" @click="back()">Back</button>
-                    <button type="submit" class="btn btn-success">
-                      <span v-if="service.pending == 2 || service.pending == 3">Update</span>
-                      <span v-if="service.pending == 0">Check</span>
-                    </button>
+                    <button
+                      type="submit"
+                      class="btn btn-success"
+                      v-if="service.pending == 0"
+                      :disabled="disabledFinish"
+                    >Finish</button>
+                    <button
+                      type="submit"
+                      class="btn btn-success"
+                      v-if="service.pending == 2 || service.pending == 3 "
+                      
+                    >Finish</button>
+                    
                   </div>
                 </div>
               </form>
@@ -130,7 +154,7 @@
         </div>
       </div>
     </div>
-    <unauthorized v-else></unauthorized> 
+    <unauthorized v-else></unauthorized>
     <div
       class="modal fade"
       id="secretModal"
@@ -173,7 +197,9 @@ export default {
   data() {
     return {
       service: "",
-      show : true,
+      show: true,
+      disabledCheck: true,
+      disabledFinish: true,
       service_engineers: [],
       form: {
         service_description: "",
@@ -206,8 +232,14 @@ export default {
             this.form.service_description = this.service.service_description;
             this.form.service_remark = this.service.service_remark;
           }
-          if(!(this.service.pending == 0 || this.service.pending == 2 || this.service.pending == 3)){
-            this.show = false
+          if (
+            !(
+              this.service.pending == 0 ||
+              this.service.pending == 2 ||
+              this.service.pending == 3
+            )
+          ) {
+            this.show = false;
           }
         })
         .catch(error => {
@@ -235,8 +267,7 @@ export default {
             }
           })
           .catch(error => {
-            
-          this.form.secret = ""
+            this.form.secret = "";
             if (error.response.status == 422) {
               Toast.fire({
                 type: "error",
@@ -276,7 +307,27 @@ export default {
     },
     back() {
       this.$router.push("/services");
+    },
+    displayFinish(){
+      
+      if(this.form.service_description.trim().length > 0){
+        console.log('service')
+         this.disabledFinish = false
+         this.disabledCheck = true
+         this.form.check_results = ''
+      }
+     
+      
+    },
+    displayCheck(){
+        if(this.form.check_results.trim().length > 0){
+        console.log('check')
+        this.disabledCheck = false
+        this.disabledFinish = true
+        this.form.service_description = ''
+      }
     }
+
   },
   created() {
     this.loadService();
@@ -286,7 +337,7 @@ export default {
     //While Modal is opened Route change has modal errors.That is dixed this error
     $("#secretModal").modal("hide");
     $(document.body).removeClass("modal-open");
-     $(document.body).css('padding-right',"0px")
+    $(document.body).css("padding-right", "0px");
     $(".modal-backdrop").remove();
   }
 };

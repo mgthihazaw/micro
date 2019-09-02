@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Item;
 
-use App\ItemType;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ItemType\ItemTypeResource;
 use App\Http\Requests\ItemType\ItemTypeStoreRequest;
 use App\Http\Requests\ItemType\ItemTypeUpdateRequest;
-
+use App\Http\Resources\ItemType\ItemTypeResource;
+use App\ItemType;
+use Illuminate\Http\Request;
 
 class ItemTypeController extends Controller
 {
@@ -17,11 +16,18 @@ class ItemTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $item_types = ItemType::orderBy('id', 'DESC')->paginate(10);
+        if ($request->page) {
+            $item_types = ItemType::orderBy('id', 'DESC')->paginate(10);
+
+        } else {
+            $item_types = ItemType::orderBy('id', 'DESC')->get();
+
+        }
 
         return ItemTypeResource::collection($item_types);
+
     }
 
     /**
@@ -76,5 +82,5 @@ class ItemTypeController extends Controller
 
         return response()->json([], 204);
     }
-  
+
 }

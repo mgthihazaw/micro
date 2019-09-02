@@ -169,16 +169,22 @@ class ServiceController extends Controller
                     ]);
                     return response()->json('Service has been finished', 200);
                 }else if($service->pending == 0){
-                    $request->validate([
-                        'check_results' => 'required'
-                    ]);
-    
-                    $service->update([
-                        'check_results' => $request->check_results,
-                        'pending' => 1
-                    ]);
-    
-                    return response()->json('Service has been checked', 200);
+                    if($request->check_results !== null){
+                        $service->update([
+                            'check_results' => $request->check_results,
+                            'pending' => 1
+                        ]);
+
+                        return response()->json('Service has been checked', 200);
+                    }else if($request->service_description !== null){
+                        $service->update([
+                            'service_description' => $request->service_description,
+                            'service_engineer_id' => $request->service_engineer,
+                            'pending' => 3,
+                        ]);
+
+                        return response()->json('Service has been finished', 200);
+                    }
                 }else if($service->pending == 3){
                     $request->validate([
                         'service_description' => 'required|string',
