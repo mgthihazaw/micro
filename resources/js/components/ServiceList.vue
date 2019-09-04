@@ -1,15 +1,13 @@
 <template>
-
   <div v-if="show">
     <unauthorized v-if="!can('service-list')"></unauthorized>
     <div v-else>
-      
       <div class="row">
         <div class="col-md-12 table-scroll">
           <div class="mb-2 row">
             <div class="col-md-1" v-if="can('service-create')">
               <router-link
-                class="btn btn-success "
+                class="btn btn-success"
                 to="/services/create"
                 v-if="can('service-create')"
               >
@@ -17,34 +15,44 @@
                 <i class="fa fa-plus"></i>
               </router-link>
             </div>
-            
+
             <div class="col-md-7 mt-sm-3 mt-md-0 mt-lg-0">
               <div class="row">
                 <div class="col-md-2 col-sm-2">
-                  <label  style="padding-top: 8px;">Search by</label>
+                  <label style="padding-top: 8px;">Search by</label>
                 </div>
                 <div class="col-md-4 col-sm-4">
-                  <select class='form-control' v-model="search_key" @change="showAll">
+                  <select class="form-control" v-model="search_key" @change="showAll">
                     <option value="id">ID</option>
                     <option value="customer_name">Name</option>
                   </select>
                 </div>
                 <div class="col-md-6 col-sm-6 search-text">
-                  <input type="text" name="search" class="form-control" v-model="search_value" @input="search_service">
+                  <input
+                    type="text"
+                    name="search"
+                    class="form-control"
+                    v-model="search_value"
+                    @input="search_service"
+                  />
                 </div>
               </div>
             </div>
-            <div class="col-md-1" v-if="!can('service-create')">
-
-            </div>
+            <div class="col-md-1" v-if="!can('service-create')"></div>
             <div class="col-md-4 mt-sm-3 mt-md-0 mt-lg-0">
               <div class="row">
                 <div class="col-md-3 col-sm-2">
                   <label for="service_filter" style="padding-top: 8px;">Filter by</label>
                 </div>
                 <div class="col-md-9 col-sm-10">
-                  <select name="service_filter" id="service_filter" class="form-control" v-model="service_filter" @change="filter_service">
-                    <option value=''>All</option>
+                  <select
+                    name="service_filter"
+                    id="service_filter"
+                    class="form-control"
+                    v-model="service_filter"
+                    @change="filter_service"
+                  >
+                    <option value>All</option>
                     <option value="0">Not Finished</option>
                     <option value="1">Checked</option>
                     <option value="2">Proceed</option>
@@ -55,8 +63,6 @@
                   </select>
                 </div>
               </div>
-              
-              
             </div>
           </div>
 
@@ -152,18 +158,29 @@
                   >
                     <i class="fas fa-print"></i>
                   </router-link>
-                 
                 </td>
               </tr>
             </tbody>
           </table>
-          <pagination :data="paginationData" @pagination-change-page="getServiceList"></pagination>
+          <paginate
+            v-model="page_no"
+            :page-count="total_page"
+            :click-handler="getServiceList"
+            :prev-text="'Prev'"
+            :next-text="'Next'"
+            :container-class="'pagination'"
+            :page-class="'page-item'"
+            :page-link-class="'page-link'"
+            :prev-class="'page-item'"
+            :next-class="'page-item'"
+            :prev-link-class="'page-link'"
+            :next-link-class="'page-link'"
+            >
+          ></paginate>
         </div>
       </div>
-      
     </div>
   </div>
- 
 </template>
 
 <script>
@@ -175,21 +192,27 @@ export default {
   data() {
     return {
       authorized: false,
-      service_filter: '',
-      search_key : 'id',
-      search_value : '',
+      service_filter: "",
+      search_key: "id",
+      search_value: "",
       User: "",
       service_list: [],
-      paginationData: {}
+      paginationData: {},
+      total_page : 1,
+      page_no : 1,
     };
   },
   methods: {
-    getServiceList(page = 1) {
+    getServiceList(page =1) {
       axios
-        .get(`/api/services?service_filter=${this.service_filter}&search_key=${this.search_key}&search_value=${this.search_value}&page=${page}`)
+        .get(
+          `/api/services?service_filter=${this.service_filter}&search_key=${this.search_key}&search_value=${this.search_value}&page=${page}`
+        )
         .then(response => {
           this.paginationData = response.data;
           this.service_list = response.data.data;
+          this.total_page = this.paginationData.meta.last_page
+          this.page_no = this.paginationData.meta.current_page
         })
         .catch(error => {
           if (error.response.data.type == "token_invalid") {
@@ -198,22 +221,30 @@ export default {
           }
         });
     },
-    filter_service(){
-      axios.get(`/api/services?service_filter=${this.service_filter}`)
-        .then((response) => {
-          this.search_key = 'id'
-          this.search_value = ''
+    filter_service() {
+      axios
+        .get(`/api/services?service_filter=${this.service_filter}`)
+        .then(response => {
+          this.search_key = "id";
+          this.search_value = "";
           this.paginationData = response.data;
           this.service_list = response.data.data;
-        })
+          this.total_page = this.paginationData.meta.last_page
+          this.page_no = this.paginationData.meta.current_page
+        });
     },
-    search_service(){
-      this.service_filter = '';
-      axios.get(`/api/services?search_key=${this.search_key}&search_value=${this.search_value}`)
-        .then((response) => {
+    search_service() {
+      this.service_filter = "";
+      axios
+        .get(
+          `/api/services?search_key=${this.search_key}&search_value=${this.search_value}`
+        )
+        .then(response => {
           this.paginationData = response.data;
           this.service_list = response.data.data;
-        })
+          this.total_page = this.paginationData.meta.last_page
+          this.page_no = this.paginationData.meta.current_page
+        });
     },
     editServicebySaleperson(id) {
       this.$router.push("/services/edit/" + id);
@@ -229,8 +260,6 @@ export default {
       this.$router.push("/services/edit/" + id);
     },
     deleteService(id) {
-      
-     
       swal
         .fire({
           title: "Are you sure to delete?",
@@ -256,15 +285,13 @@ export default {
           });
         });
     },
-    showAll()
-    {
-      this.search_value = ''
+    showAll() {
+      this.search_value = "";
       this.getServiceList();
     }
   },
 
   created() {
-    
     this.auth();
     this.getServiceList();
     Bus.$on("afterServiceDeleted", () => {
@@ -273,14 +300,14 @@ export default {
   },
   filters: {
     subStr: function(string) {
-      if(string){
+      if (string) {
         if (string.length > 20) {
           return string.substring(0, string.indexOf("</")) + "...";
         }
         return string;
       }
-    
-      return '....';
+
+      return "....";
     }
   }
 };
@@ -288,8 +315,8 @@ export default {
 
 <style scoped>
 @media screen and (max-width: 575px) {
-  .search-text{
-    margin-top : 15px;
+  .search-text {
+    margin-top: 15px;
   }
 }
 .table-scroll {

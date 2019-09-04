@@ -3,7 +3,7 @@
     <unauthorized v-if="!can('staff-create')"></unauthorized>
     <div v-else>
       <div class="row" v-if="(!createMode && !editMode)">
-        <div class="col-12 animated zoomIn table-scroll">
+        <div class="col-12  table-scroll">
           <div class="mb-2 row">
             <div class="col-md-5" v-if="can('staff-create')">
               <button class="btn btn-outline-success btn-lg" @click="create">

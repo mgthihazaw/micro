@@ -2,7 +2,7 @@
   <div v-if="show">
     <unauthorized v-if="!can('staff-list')"></unauthorized>
     <div class="col-12 animated fadeIn" v-else>
-      <div>
+      <div class="search_form">
         <form @submit.prevent="loadService">
           <div class="form-group row pt-2">
             <div class="col-md-5">
@@ -52,12 +52,16 @@
               <tr>
                 <td></td>
                 <td>
-                  <h5 class="text-info">Total Price of Month</h5>
+                  <h6 class="text-info">Total Price of Month</h6>
                 </td>
                 <td>
-                  <h5 class="text-info">{{ totalPrice }}</h5>
+                  <h6 class="text-info">{{ totalPrice }}</h6>
                 </td>
-                <td></td>
+                <td>
+                  <button class="btn btn-primary btn-sm print_btn" @click="this.print()" >
+                    <i class="fas fa-print"></i> PDF
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -217,5 +221,17 @@ td {
 }
 .table-hover tbody tr:hover td {
   background: #e9ecef;
+}
+
+@media print {
+  .search_form {
+    display :none;
+  }
+  .print_btn {
+    display : none;
+  }
+  .table{
+    font-size :14px;
+  }
 }
 </style>

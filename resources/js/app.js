@@ -8,6 +8,10 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+//Vue pagination
+
+import Paginate from 'vuejs-paginate'
+Vue.component('paginate', Paginate)
 
 //TinyMce 
 import Editor from '@tinymce/tinymce-vue';
@@ -39,11 +43,7 @@ window.Bus = new Vue();
 import Auth from './Helpers/Auth';
 Vue.mixin(Auth);
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+
 import router from './Router/router.js';
 
 import {User} from './Helpers/User.js';
@@ -54,13 +54,7 @@ axios.interceptors.response.use(function (response) {
 	
 	return response;
 }, function (error) {
-	// console.log("NetWork Error",error)
-	// if(error =="Network Error"){
-	// 	Toast.fire({
-	// 		type : "error",
-	// 		title : "Network Error,check your network connection and refresh the page"
-	// 	});
-	// }
+	
 	Toast.fire({
 		type: "error",
 		title: error.response.data.error
@@ -96,20 +90,12 @@ Vue.component('pagination', require('laravel-vue-pagination'));
 
 Vue.component('app-home', require('./components/AppHome.vue'));
 
-// import Turbolinks from 'turbolinks';
-// Turbolinks.start()
-  
-//   import TurbolinksAdapter from 'vue-turbolinks';
-//   Vue.use(TurbolinksAdapter)
-//   document.addEventListener('turbolinks:load', () => {
-//     var element=document.getElementById("app")
-//     if(element != null){
+
 const app = new Vue({
 	el: '#app',
 	router,
 });
-// }
-// });
+
 $(function(){
 	$(document).on('keydown', function(event){
 		if(event.keyCode == 13) {

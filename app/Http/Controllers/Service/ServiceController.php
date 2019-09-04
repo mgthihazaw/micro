@@ -24,16 +24,16 @@ class ServiceController extends Controller
     {
         if($request->has('service_filter') && $request->query('service_filter') !== null){
             $filter = $request->query('service_filter');
-                return ServiceResource::collection(Service::where('pending', $filter)->paginate(10));
+                return ServiceResource::collection(Service::where('pending', $filter)->paginate(20));
         }else if($request->has('search_key') && $request->has('search_value') && $request->query('search_value') !== null){
             $search_key = $request->query('search_key');
             $search_value = $request->query('search_value');
             if($search_key == "id"){
-            return ServiceResource::collection(Service::where($search_key, $search_value)->paginate(10));
+            return ServiceResource::collection(Service::where($search_key, $search_value)->paginate(20));
             }
-            return ServiceResource::collection(Service::where($search_key, 'LIKE', "$search_value%")->paginate(10));
+            return ServiceResource::collection(Service::where($search_key, 'LIKE', "$search_value%")->paginate(20));
         }
-        return ServiceResource::collection(Service::orderBy('id','DESC')->paginate(10));
+        return ServiceResource::collection(Service::orderBy('id','DESC')->paginate(20));
     }
 
     /**

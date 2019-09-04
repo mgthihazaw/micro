@@ -40,6 +40,7 @@
         "vue-select": "^2.6.2",
         "vue-turbolinks": "^2.0.4",
         "vuejs-datetimepicker": "^1.1.12",
+        "vuejs-paginate": "^2.1.0",
         "vuetify": "^1.5.7"
     }
 }
