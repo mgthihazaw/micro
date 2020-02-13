@@ -12,7 +12,7 @@ class StaffSeeder extends Seeder
      */
     public function run()
     {
-        
+
         // $staff = Staff::create([
         // 	'person_business_id' => 7,
         //     'business_id' => 2,
@@ -37,7 +37,7 @@ class StaffSeeder extends Seeder
         //     'password' => bcrypt('thantzinsoe'),
         // ]);
         // $staff->attachRole(3);
-        
+
         // $staff = Staff::create([
         //     'person_business_id' => 11,
         //     'business_id' => 2,
@@ -60,7 +60,7 @@ class StaffSeeder extends Seeder
             'person_business_id' => 13,
             'business_id' => 2,
             'username' => 'administrator',
-            'password' => bcrypt('thantzinsoe'),
+            'password' => bcrypt('admin'),
         ]);
         $staff->attachRole(1);
     }

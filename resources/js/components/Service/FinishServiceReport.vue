@@ -9,14 +9,15 @@
             <table>
               <tr>
                 <td class="title">
-                  <img :src="'/images/logo/1.png'" alt="microstack" width="300px">
+                  <img :src="'/images/logo/1.png'" alt="microstack" width="300px" />
                 </td>
 
                 <td>
-                    
                   Invoice : Mrs-{{service.id}}
-                  <br>Created: {{ service.created_at | myDate}}
-                  <br>Due: {{ service.updated_at | myDate}}
+                  <br />
+                  Created: {{ service.created_at | myDate}}
+                  <br />
+                  Due: {{ service.updated_at | myDate}}
                 </td>
               </tr>
             </table>
@@ -28,46 +29,41 @@
             <table>
               <tr>
                 <td>
-                 <h5 class="pb-2">Company Information</h5>
-                 Microstack
-                  <br>63*64,Kantkaw Street
-                  <br>Theitpan Street
+                  <h5 class="pb-2">Company Information</h5>Microstack
+                  <br />63*64,Kantkaw Street
+                  <br />Theitpan Street
                 </td>
 
                 <td>
-                     <h5 class="pb-2">Customer Information</h5>
-                  Acme Corp.
-                  <br>John Doe
-                  <br>john@example.com
+                  <h5 class="pb-2">Customer Information</h5>Acme Corp.
+                  <br />John Doe
+                  <br />john@example.com
                 </td>
               </tr>
             </table>
           </td>
         </tr>
         <tr>
-            <td colspan="2"> 
+          <td colspan="2">
             <div class="row">
-                     <div class="callout callout-info mb-4 col-6">
-                      <h6 class="mb-3 heading">Received Description</h6>
-                      {{ service.description}}
-                    </div>
+              <div class="callout callout-info mb-4 col-6">
+                <h6 class="mb-3 heading">Received Description</h6>
+                {{ service.description}}
+              </div>
 
-                    <div class="callout callout-info mb-4 col-6">
-                      <h6 class="mb-3 heading">Received Remarks</h6>
-                      {{ service.remark}}
-                    </div>
-                    </div>
-                    </td></tr>
-       <tr class="heading">
-                <td>
-                    Item
-                </td>
-                
-                <td>
-                    Price
-                </td>
-            </tr>
-        
+              <div class="callout callout-info mb-4 col-6">
+                <h6 class="mb-3 heading">Received Remarks</h6>
+                {{ service.remark}}
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="heading">
+          <td>Item</td>
+
+          <td>Price</td>
+        </tr>
+
         <tr class="item">
           <td>Website design</td>
 
@@ -132,7 +128,7 @@ export default {
   created() {
     if (User.isLoggedIn()) {
       axios.post("/api/auth/me").then(response => {
-        Gate.setUser(response.data.user.roles,response.data.user.permissions);
+        Gate.setUser(response.data.user.roles, response.data.user.permissions);
 
         if (!(Gate.isSaleperson() || Gate.isServiceEngineer())) {
           this.shows();
@@ -153,7 +149,6 @@ export default {
 .callout {
   background-color: #eff0f1;
   border-left: 3px solid #7e7e7e;
-  
 }
 .invoice-box {
   margin: auto;
@@ -162,7 +157,7 @@ export default {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   font-size: 16px;
   line-height: 24px;
-  
+
   color: #555;
 }
 

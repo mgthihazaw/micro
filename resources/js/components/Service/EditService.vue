@@ -35,8 +35,8 @@ export default {
     },
     shows() {
       this.show = true;
-	},
-	can(permis) {
+    },
+    can(permis) {
       return Gate.can(permis);
     }
   },

@@ -59,39 +59,39 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
 
-        if($request->wantsJson()){
-            if($exception instanceof AuthenticationException){
+        if ($request->wantsJson()) {
+            if ($exception instanceof AuthenticationException) {
                 return response()->json('Authentication Required');
             }
-            if ($exception instanceof TokenInvalidException){
+            if ($exception instanceof TokenInvalidException) {
                 return response()->json(['error' => 'Token is Invalid', 'type' => 'token_invalid'], 403);
-            }else if ($exception instanceof TokenExpiredException){
-                return response()->json(['error' => 'Token is Expired', 'type' => 'token_expired'],403);
-            }else if($exception instanceof JWTException){
+            } else if ($exception instanceof TokenExpiredException) {
+                return response()->json(['error' => 'Token is Expired', 'type' => 'token_expired'], 403);
+            } else if ($exception instanceof JWTException) {
                 return response()->json(['error' => 'Unauthenticated'], 401);
-            }else if($exception instanceof ModelNotFoundException){
-                $message = class_basename($exception->getModel())." Not Found";
+            } else if ($exception instanceof ModelNotFoundException) {
+                $message = class_basename($exception->getModel()) . " Not Found";
                 return response()->json(['error' => $message], 404);
-            }else if($exception instanceof NotFoundHttpException){
+            } else if ($exception instanceof NotFoundHttpException) {
                 return response()->json(['error' => 'URL Not Found'], 404);
-            }else if($exception instanceof MethodNotAllowedHttpException){
+            } else if ($exception instanceof MethodNotAllowedHttpException) {
                 return response()->json(['error' => 'Method not allowed for the requested endpoint'], 405);
             }
             // else if($exception instanceof QueryException){
             //     // dd($exception->getMessage());
             //     return response()->json(['error' => 'Query Exception'], 500);
             // }
-            else if($exception instanceof ValidationException) {
+            else if ($exception instanceof ValidationException) {
                 return $this->convertValidationExceptionToResponse($exception, $request);
             }
-            dd($exception);
+            // dd($exception);
             return response()->json(['error' => $exception->getMessage()], 500);
         }
 
-        if($exception instanceof JWTException){
+        if ($exception instanceof JWTException) {
             return redirect('/');
         }
-        
+
         return parent::render($request, $exception);
     }
 }

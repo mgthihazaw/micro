@@ -1,15 +1,15 @@
 <template>
-  <div v-if="show" >
+  <div v-if="show">
     <unauthorized v-if="!can('service-create')"></unauthorized>
-    <div  v-else class="container formcolor animated zoomIn">
-      <div class="row ">
+    <div v-else class="container formcolor animated zoomIn">
+      <div class="row">
         <div class="col-12">
           <h3 class="pt-3">ADD NEW SERVICE</h3>
         </div>
       </div>
-      <hr>
+      <hr />
       <div class="row mt-4">
-        <div class="col-12 ">
+        <div class="col-12">
           <form @submit.prevent="addNewService">
             <!-- <div class="form-group row">
               <div class="col-md-4">
@@ -23,10 +23,9 @@
                   label="name"
                 ></multiselect>
               </div>
-            </div> -->
-            <label >Customer Information</label>
+            </div>-->
+            <label>Customer Information</label>
             <div class="form-group row">
-              
               <div class="col-md-4">
                 <input
                   type="text"
@@ -34,7 +33,7 @@
                   placeholder="Customer Name"
                   v-model="form.customer_name"
                   :disabled="disable"
-                >
+                />
                 <div
                   class="error"
                   v-for="(error,index) in form_errors['customer_name']"
@@ -48,7 +47,7 @@
                   placeholder="Customer Phone"
                   v-model="form.customer_phone"
                   :disabled="disable"
-                >
+                />
                 <div
                   class="error"
                   v-for="(error,index) in form_errors['customer_phone']"
@@ -62,7 +61,7 @@
                   placeholder="Customer Address"
                   v-model="form.customer_address"
                   :disabled="disable"
-                >
+                />
                 <div
                   class="error"
                   v-for="(error,index) in form_errors['customer_address']"
@@ -73,7 +72,7 @@
 
             <div class="form-group row">
               <div class="col-md-6">
-                <label >Received By</label>
+                <label>Received By</label>
                 <multiselect
                   v-model="form.receive_staff"
                   track-by="name"
@@ -90,8 +89,8 @@
                 >{{ error }}</div>
               </div>
               <div class="col-lg-4 col-md-5 offset-md-1 offset-lg-2">
-                <label >Received Date</label>
-                <datetime format="YYYY-MM-DD H:i:s" v-model="form.date" name="date" required ></datetime>
+                <label>Received Date</label>
+                <datetime format="YYYY-MM-DD H:i:s" v-model="form.date" name="date" required></datetime>
 
                 <div
                   class="error"
@@ -104,7 +103,7 @@
             <div class="form-group">
               <label for="description">Error Description</label>
               <editor
-               :init="{menubar:false,
+                :init="{menubar:false,
                        statusbar: false,
                        toolbar : false}"
                 name="description"
@@ -143,7 +142,6 @@
             <div class="form-group text-right">
               <button class="btn btn-secondary" @click="close">Back</button>
               <button type="submit" class="btn btn-primary">Save</button>
-              
             </div>
           </form>
         </div>
@@ -153,16 +151,15 @@
 </template>
 <script>
 import Unauthorized403 from "../errors/Unauthorized403";
-import datetime from 'vuejs-datetimepicker';
+import datetime from "vuejs-datetimepicker";
 
 export default {
   components: {
     Unauthorized: Unauthorized403,
-    datetime 
+    datetime
   },
   data() {
     return {
-      
       disable: false,
       receptionists: [],
       customers: [],
@@ -174,7 +171,7 @@ export default {
         receive_staff: "",
         description: "",
         remark: "",
-        date : ""
+        date: ""
       },
       form_errors: []
     };
@@ -185,7 +182,6 @@ export default {
         .get("/api/receptionists")
         .then(response => {
           this.receptionists = response.data;
-          
         })
         .catch(error => {
           console.log(error.response);
@@ -195,7 +191,6 @@ export default {
       axios
         .get("/api/customers")
         .then(response => {
-          
           this.customers = response.data;
         })
         .catch(error => {
@@ -228,14 +223,12 @@ export default {
             type: "error",
             title: error.response.data.message
           });
-          
+
           if (error.response.status == 422) {
-            
             this.form_errors = error.response.data.errors;
             this.form.receive_staff = this.receptionists.find(staff => {
               return staff.no === this.form.receive_staff;
             });
-            
           }
         });
     },
@@ -273,11 +266,11 @@ export default {
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scope>
-#tj-datetime-input{
+#tj-datetime-input {
   height: 43px;
 }
-.tox-notifications-container{
-  display : none !important;
+.tox-notifications-container {
+  display: none !important;
 }
 @media (max-width: 768px) {
   .col-md-4 {
@@ -288,12 +281,11 @@ export default {
   color: red;
 }
 .formcolor {
-  
-    background: #EBEFF2;
-    border-left: 2px solid rgba(113, 190, 152, 0.271);
-    border-right: 2px solid rgba(113, 190, 152, 0.271);
-    border-top: 20px solid rgba(113, 190, 152, 0.271);
-    border-bottom: 2px solid rgba(113, 190, 152, 0.271);
-    border-radius:30px;
+  background: #ebeff2;
+  border-left: 2px solid rgba(113, 190, 152, 0.271);
+  border-right: 2px solid rgba(113, 190, 152, 0.271);
+  border-top: 20px solid rgba(113, 190, 152, 0.271);
+  border-bottom: 2px solid rgba(113, 190, 152, 0.271);
+  border-radius: 30px;
 }
 </style>

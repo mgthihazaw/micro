@@ -27,10 +27,10 @@ class CreateServiceTable extends Migration
             $table->text('received_description')->nullable();
             $table->text('received_remark')->nullable();
             $table->text('service_description')->nullable();
-            $table->text('service_remark')->nullable();
+            $table->text('check_results')->nullable();
 
             $table->boolean('pending')->default(false);
-            
+
             $table->foreign('business_id')->references('id')->on('businesses')->onDelete('cascade');
             $table->foreign('staff_id')->references('id')->on('staffs')->onDelete('cascade');
             $table->foreign('service_engineer_id')->references('id')->on('staffs')->onDelete('cascade');
@@ -49,7 +49,7 @@ class CreateServiceTable extends Migration
      */
     public function down()
     {
-        Schema::table('services', function(Blueprint $table){
+        Schema::table('services', function (Blueprint $table) {
             $table->dropForeign(['business_id']);
             $table->dropForeign(['staff_id']);
             $table->dropForeign(['service_engineer_id']);

@@ -110,8 +110,8 @@
                     </div>
 
                     <div class="des mb-4 col-6">
-                      <h6 class="mb-3">Service Remarks</h6>
-                      <span v-html="service.service_remark"></span>
+                      <h6 class="mb-3">Check Results</h6>
+                      <span v-html="service.check_results"></span>
                     </div>
                   </div>
 
@@ -218,10 +218,13 @@
           </div>
           <div class="col-md-1 text-right">
             <button
-                class="btn btn-success"
-                @click="print"
-                v-if="(service.pending == 3 || service.pending == 4) && printBtnDisplay  && serviceItems.length > 0"
-              >Print <i class="fa fa-print"></i></button>
+              class="btn btn-success"
+              @click="print"
+              v-if="(service.pending == 3 || service.pending == 4) && printBtnDisplay  && serviceItems.length > 0"
+            >
+              Print
+              <i class="fa fa-print"></i>
+            </button>
           </div>
         </div>
       </div>
