@@ -30,7 +30,7 @@
         "laravel-vue-pagination": "^2.3.0",
         "moment": "^2.24.0",
         "node-sass": "^4.13.1",
-        "select2": "^4.0.6-rc.1",
+        "select2": "^4.0.6",
         "sweetalert2": "^8.8.7",
         "tinymce": "^5.0.12",
         "turbolinks": "^5.2.0",
